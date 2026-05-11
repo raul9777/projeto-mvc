@@ -21,7 +21,7 @@ ACCESS_TOKEN_EXPIRACAO_MINUTOS = os.getenv("ACCESS_TOKEN_EXPIRACAO_MINUTOS")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 #funções de senha
-def hash_(senha:str):
+def hash_senha(senha:str):
     return pwd_context.hash(senha)
 
 def verificar_senha(senha:str, senha_hash:str):
@@ -53,7 +53,7 @@ def get_usuario_logado(request: Request):
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail = "Token não autenticado"
+            detail = "Não autenticado"
         )
     try:
         payload = decodificar_token(token)
@@ -61,7 +61,8 @@ def get_usuario_logado(request: Request):
 
         if email is None:
             raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token inválido"
         )
 
         return payload
@@ -70,4 +71,10 @@ def get_usuario_logado(request: Request):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token invalido ou expirado"
         )
+    
+def get_usuario_opcional(request: Request):
+    try:
+        return get_usuario_logado(request)
+    except HTTPException:
+        return None
         

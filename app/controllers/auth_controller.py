@@ -7,7 +7,7 @@ from app.database import get_db
 from app.models import usuario
 from app.auth import hash_senha, verificar_senha, criar_token
 
-router = APIRouter(profix="/auth",tags=["Autenticação"])
+router = APIRouter(prefix="/auth",tags=["Autenticação"])
 
 templates = Jinja2Templates(directory="app/templates")
 
@@ -18,5 +18,15 @@ def tela_cadastro(request:Request):
     return templates.TemplateResponse(
         request,
         "auth/cadastro.html",
-        {"request":Request}
+        {"request":request}
     )
+
+# Exibir tela de login
+@router.get("/login")
+def tela_cadastro(request:Request):
+    return templates.TemplateResponse(
+        request,
+        "auth/login.html",
+        {"request":request}
+    )
+

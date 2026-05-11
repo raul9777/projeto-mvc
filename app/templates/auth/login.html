@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>login</title>
 </head>
 <body>
-    <h1>Criar conta</h1>
+    <h1>Entrar no sistema</h1>
 
-    <form action="/auth/cadastro" method="post">
-        Nome: <input type="text" name="nome">
+    <form action="/auth/logib" method="post">
+        Nome: <input type="email" name="email" required> 
         <br><br>
         E-mail: <input type="email" name = "email" required>
         <br><br>
-        Senha: <input type="password" name = "senha" minlength="4">
+        Senha: <input type="password" name = "senha">
         <br><br>
         {% if erro %}
             <p style="color: red;">{{ erro }}</p>
         {% endif %}
-        <button type="submit">Cadastrar</button>
+        <button type="submit">Entrar</button>
     </form>
-    <p>Já tem conta? <a href="/auth/login"></a></p>
+    <p>Não tem conta? <a href="/auth/cadastro">Cadastra-se</a></p>
     
 </body>
 </html>
