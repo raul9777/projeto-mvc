@@ -30,19 +30,19 @@ def verificar_senha(senha:str, senha_hash:str):
 #Funções do token
 def criar_token(data:dict):
     
-    paylod = data.copy()
+    payload = data.copy()
 
     #Define quando o token expira
     expira = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRACAO_MINUTOS)
-    paylod.upadate({"exp": expira})
+    payload.update({"exp": expira})
 
     #Criar o token
-    token = jwt.encode(paylod, SECRET_KEY, algorithm=ALGORITHM)
+    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
     return token
 
 def decodificar_token(token: str):
-    paylod = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    return paylod
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    return payload
 
 
 #Dependencia do fastapi

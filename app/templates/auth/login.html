@@ -8,7 +8,14 @@
 <body>
     <h1>Entrar no sistema</h1>
 
+
+
     <form action="/auth/logib" method="post">
+
+        {% if request.query_params.get("cadastro") == "ok" %}
+            <p style="color:  pink;">Cadastro realizado! Faça  login</p>
+            {% endif %}
+        
         Nome: <input type="email" name="email" required> 
         <br><br>
         E-mail: <input type="email" name = "email" required>
