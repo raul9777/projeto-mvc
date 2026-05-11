@@ -60,6 +60,57 @@ def cadastrar_usuario(
     # Redirecionar para login após cadastro
     return  RedirectResponse(url="/auth/login?cadastro=ok",status_code=302)
 
+# Rota de login
+@router.post("/login")
+def fazer_login(
+    request: Request,
+    email: str = Form(...),
+    senha: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    # Buscar o usuário no banco pelo e-mail
+    usuario = db.query(Usuario).filter_by(email=email).first()
+
+    #Verificar a senha com brcypt
+    senha_correta = ( usuario is not None and verificar_senha(senha, usuario.senha_hash) )
+
+    if not senha_correta:
+        #Retorna o formulario com mensagem de erro
+        return templates.TemplateResponse(
+            request,
+            "auth/login.html",
+            {"request": request, "erro": "E-mail ou senha incorretos"}
+        )
+    
+    if not usuario.ativo:
+        return templates.TemplateResponse(
+            request,
+            "auth/login.html",
+            {"request": request, "erro": "Usuário inativo. Contate o administrador."}
+        )
 
 
+    # Gerar o token JWT
+    # Dados do payload
+    token_data = {
+        "sub": usuario.email,
+        "nome": usuario.nome,
+        "role": usuario.role,
+        "id": usuario.id
+    }
+
+    token = criar_token(token_data)
+
+    #Salvar o token em cookies HttpOnly
+    #Redirecionar para a pagina principal
+    response = RedirectResponse(url="/", status_code=302)
+
+    response.set_cookie(
+        key="acess_token",
+        value=token,
+        httponly=True,
+        secure=True,
+        samesite="lax"
+    )
+    return response
 
