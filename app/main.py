@@ -6,22 +6,24 @@ from app.auth import get_usuario_opcional
 
 from app.controllers import auth_controller
 
+app = FastAPI(title="Sistema estoque")
 
-app = FastAPI(title="Sistema de estoque")
-
-#Configurar o Fastapi para servir os arquivos estaticos (CSS, JS, Imagens)
+#Configurar o Fastapi para servir os arquivos estáticos (CSS, JS, Imagens)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 templates = Jinja2Templates(directory="app/templates")
 
-#Incluir os routers dos controles
+#Inclui os routers dos controles
 app.include_router(auth_controller.router)
+
 
 #Tela inicial
 @app.get("/")
-def home(request: Request,
-     usuario = Depends(get_usuario_opcional)
+def home(
+    request: Request, 
+    usuario = Depends(get_usuario_opcional)
     ):
+
     # Não logado - exibir página pública
     if usuario is None:
         return templates.TemplateResponse(
@@ -30,10 +32,9 @@ def home(request: Request,
             {"request": request}
         )
     
-    #Logado - exibir a tela principal com os dados do usuario
+    #Logado - exibir a tela principal com os dados do usuário
     return templates.TemplateResponse(
-        request,
-        "home.html",
-        {"request": request, "usuario": usuario}
-    )
-    
+            request,
+            "home.html",
+            {"request": request, "usuario": usuario}
+        )

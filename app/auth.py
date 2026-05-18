@@ -1,4 +1,4 @@
-# 1. Hash e verificaçãode senha com bcrypt
+# 1. Hash e verificação de senhas com bcrypt
 # 2. Geração do tokens JWT
 # 3. Leitura e validação do token vindo do cookie
 
@@ -9,7 +9,7 @@ from fastapi import Request, HTTPException, status
 from dotenv import load_dotenv
 import os
 
-#Carregar as variaveis de ambiente
+#Carregar as variáveis de ambiente
 load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -20,15 +20,15 @@ ACCESS_TOKEN_EXPIRACAO_MINUTOS = os.getenv("ACCESS_TOKEN_EXPIRACAO_MINUTOS")
 #CryptContent
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-#funções de senha
-def hash_senha(senha:str):
+# Funções de senha
+def hash_senha(senha: str):
     return pwd_context.hash(senha)
 
-def verificar_senha(senha:str, senha_hash:str):
+def verificar_senha(senha: str, senha_hash: str):
     return pwd_context.verify(senha, senha_hash)
 
-#Funções do token
-def criar_token(data:dict):
+# Funções do token
+def criar_token(data: dict):
     
     payload = data.copy()
 
@@ -45,15 +45,15 @@ def decodificar_token(token: str):
     return payload
 
 
-#Dependencia do fastapi
+# Dependência do fastapi
 def get_usuario_logado(request: Request):
 
-    token = request.cookies.get("acess_token")
+    token = request.cookies.get("access_token")
 
-    if not token:
+    if not token: 
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail = "Não autenticado"
+            detail="Não autenticado"
         )
     try:
         payload = decodificar_token(token)
@@ -65,16 +65,15 @@ def get_usuario_logado(request: Request):
             detail="Token inválido"
         )
 
-        return payload
+        return payload 
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token invalido ou expirado"
+            detail="Token inválido ou expirado"
         )
-    
+
 def get_usuario_opcional(request: Request):
-    try:
+    try: 
         return get_usuario_logado(request)
     except HTTPException:
         return None
-        
