@@ -1,7 +1,5 @@
-# controllers/admin_controller.py
-# Rotas acessíveis apenas por administradores.
-# Segue o mesmo padrão MVC do auth_controller.
-
+# admin_controller.py
+# Rotas acessíveis apenas por admin
 
 from fastapi import APIRouter, Depends, Request, Form, status
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -12,42 +10,45 @@ from app.database import get_db
 from app.models.usuario import Usuario
 from app.auth import get_admin, hash_senha
 
+
 router = APIRouter(prefix="/usuarios", tags=["Usuários"])
 
 templates = Jinja2Templates(directory="app/templates")
 
-# LISTAGEM
 
-
-@router.get("/", response_class=HTMLResponse)
+# Exibir os usuarios do sistema
+@router.get("/")
 def listar_usuarios(
     request: Request,
     db: Session = Depends(get_db),
-    admin = Depends(get_admin)  # bloqueia quem não é admin
+    admin = Depends(get_admin) # Bloqueia quem não é admin
 ):
-    """Lista todos os usuários cadastrados no sistema."""
+   
+    # Buscar usuarios do banco
     usuarios = db.query(Usuario).order_by(Usuario.nome).all()
 
     return templates.TemplateResponse(
+        request,
         "usuarios/index.html",
         {
             "request": request,
-            "usuario": admin,   # dados de quem está logado (para navbar)
-            "usuarios": usuarios  # lista para exibir na tabela
+            "admin": admin,
+            "usuarios": usuarios
+
         }
     )
 
 
-
 # CADASTRO
 
-@router.get("/novo", response_class=HTMLResponse)
+@router.get("/novo")
 def form_novo_usuario(
     request: Request,
     admin = Depends(get_admin)
 ):
     """Exibe o formulário de cadastro de novo usuário."""
     return templates.TemplateResponse(
+        request,
         "usuarios/form.html",
         {
             "request": request,
@@ -76,6 +77,7 @@ def criar_usuario(
 
     if existente:
         return templates.TemplateResponse(
+            request,
             "usuarios/form.html",
             {
                 "request": request,
@@ -92,6 +94,7 @@ def criar_usuario(
     # Evita que alguém manipule o formulário e envie um role inválido
     if role not in ("admin", "operador"):
         return templates.TemplateResponse(
+            request,
             "usuarios/form.html",
             {
                 "request": request,
@@ -118,7 +121,7 @@ def criar_usuario(
 
 
 # EDIÇÃO
-@router.get("/{usuario_id}/editar", response_class=HTMLResponse)
+@router.get("/{usuario_id}/editar")
 def form_editar_usuario(
     usuario_id: int,
     request: Request,
@@ -132,6 +135,7 @@ def form_editar_usuario(
         return RedirectResponse(url="/usuarios", status_code=302)
 
     return templates.TemplateResponse(
+        request,
         "usuarios/form.html",
         {
             "request": request,
@@ -166,6 +170,7 @@ def editar_usuario(
 
     if conflito:
         return templates.TemplateResponse(
+            request,
             "usuarios/form.html",
             {
                 "request": request,
@@ -178,6 +183,7 @@ def editar_usuario(
 
     if role not in ("admin", "operador"):
         return templates.TemplateResponse(
+            request,
             "usuarios/form.html",
             {
                 "request": request,
