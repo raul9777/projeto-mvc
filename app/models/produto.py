@@ -22,8 +22,12 @@ class Produto(Base):
 
 
     #MÉTODO
+    @property
     def imagem_url(self):
         if self.imagem_path:
             return f"/static/{self.imagem_path}"
         else:
             return "/static/imagens/produto_placeholder.png"
+    
+        
+    
